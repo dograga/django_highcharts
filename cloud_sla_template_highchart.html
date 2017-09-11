@@ -1,0 +1,101 @@
+
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+ <script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+
+</div>
+<h2>&nbsp&nbsp&nbsp Cloud Monthly Automated SLA Report - {{ datetile }}</h2>
+<body>
+<br><br>
+<table>
+<tr>
+<td>
+<h3>&nbsp&nbsp&nbsp&nbsp  Uptime SLA</h3></td>
+</tr>
+</tr>
+</table>
+<table>
+<tr>
+<td><div id="container4"></div></td>
+<td><div id="container0"></div></td>
+<td><div id="container1"></div></td>
+<td><div id="container2"></div></td>
+<td><div id="container3"></div></td>
+</tr>
+</table>
+<script>
+function createChart(containerId,title,credits,sla) {
+   var chartingOptions = {
+    chart: {renderTo: containerId, type: 'solidgauge',width: 380},
+    title: {
+            text: title
+        },
+    credits: credits,
+    pane: {
+        size: '100%',
+        startAngle: -90,
+        endAngle: 90,
+        background: {
+            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',innerRadius: '60%',outerRadius: '70%',shape: 'arc'
+        }
+     },
+    plotOptions: {
+        solidgauge: {
+            dataLabels: {
+                y: 5,
+                borderWidth: 0,
+                useHTML: true
+            }
+        }
+     },
+    yAxis: {
+        min: 50,
+        max: 100,
+        stops: [
+            [0.8, '#ff0000'], //red 
+            [0.95, '#DDDF0D'], // yellow 
+            [0.98, '#55BF3B'] // green 
+        ],
+        lineWidth: 0,
+        minorTickInterval: 0,
+        tickPixelInterval: 50,
+        title: {
+            y: -50
+        },
+        labels: {
+            y: 14
+        }
+     },
+  series: [{
+        name: 'SLA',
+        data: [sla],
+        dataLabels: {
+            format: '<div style="text-align:center"><span style="font-size:20px;color:' +
+                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+                   '<span style="font-size:10px;color:silver">Percent</span></div>'
+             },
+        tooltip: {
+            valueSuffix: '%'
+            }
+      }]
+    }
+    $('#' + containerId).highcharts(chartingOptions);
+}
+
+var credits= {enabled : false}
+var i=0
+{% for keys,value_list in dfsla.items %}
+   var sla= {{ value_list.sla|safe }}
+   var zone= "{{ value_list.zone|safe }}"
+   var containerid="container"+i
+   title="SLA "+zone
+   createChart(containerid,title,credits,sla)
+   i=i+1
+{% endfor %}
+</script>
+</body>
+</html>
+
