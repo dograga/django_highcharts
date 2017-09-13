@@ -1,4 +1,8 @@
 def snowmonthlysla(request):
+    '''
+       Sample django view for monthly ServiceNow SLA report
+       Data collection codes on ServiceNow repo
+    '''
     sql="select top 1 year, month, monthlysla from snow_summary order by year desc, month desc"
     cnxn=[[ get DB connection]]
     df= pd.read_sql_query(sql, cnxn)
