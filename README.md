@@ -16,4 +16,4 @@ Charts for cloud uptime from codes in https://github.com/dograga/ServiceNowPytho
 
 Following is sample output:
 
-![Alt text](/servicenow_sla_sample.JPG?v=4&s=100 "")
+![Alt text](/servicenow_sla_sample.JPG?v=4&s=50 "")
