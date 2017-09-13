@@ -14,4 +14,4 @@ def cloudmonthlysla(request):
     cloudaverage=dfsla['sla'].mean()
     dfsla.loc[len(dfsla)]=['Cloud All zones',cloudaverage] ## add all zone average row
     dfsla=dfsla.T.to_dict()
-    return render(request, 'vmcap/cloudmonthlysla.html',{'dfsla': dfsla,'datetile': datetile})
+    return render(request, 'cloudmonthlysla.html',{'dfsla': dfsla,'datetile': datetile})

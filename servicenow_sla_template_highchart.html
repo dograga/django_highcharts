@@ -1,0 +1,96 @@
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+ <script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src = "https://code.highcharts.com/highcharts-3d.js"></scrip
+
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+
+</div>
+<h2>&nbsp&nbsp&nbsp Monthly ServiceNow SLA Report - {{ datetile }}</h2>
+<body>
+<br><br>
+<table>
+<tr>
+<td>
+</tr>
+</tr>
+</table>
+<table>
+<tr>
+<td><div id="container0"></div></td>
+</tr>
+</table>
+<script>
+function piecreateChart(containerId,credits,sla,breached) {
+   var chartingOptions = {
+    chart: {
+        renderTo: containerId,
+        type: 'pie',
+       options3d: {
+            enabled: true,
+            alpha: 45,
+            beta: 0
+        }
+    },
+  tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    title: {
+            text: null 
+        },
+    credits: credits,
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            depth: 35,
+            slicedOffset: 20,
+            showInLegend: true,
+            dataLabels: {
+                enabled: true,
+                format: '{point.name}'
+            },
+             style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+        }
+    },
+     legend: {
+                enabled: true,
+                layout: 'vertical',
+                align: 'right',
+                width: 150,
+                verticalAlign: 'middle',
+                useHTML: true,
+                labelFormatter: function() {
+                    return '<div style="text-align: left; width:120px;float:left;">' + this.name +"&nbsp"+ this.y + '%</div>';
+				}
+            },
+  series: [
+        {
+        data: [{
+        name: 'Acheived',
+        y: sla,
+             selected: true,
+                sliced: true
+         },
+         {
+        name: 'Breached',
+        y: breached 
+         }
+        ]
+      }]
+    }
+    $('#' + containerId).highcharts(chartingOptions);
+}
+
+var credits= {enabled : false}
+var sla={{ dfsla.0.monthlysla|safe  }}
+var breached=100-sla
+breached=(breached.toFixed(2))/1
+var containerid="container0"
+//alert(breached)
+piecreateChart(containerid,credits,sla,breached)
+</script>
+</body>
+</html>
