@@ -17,3 +17,10 @@ Charts for cloud uptime from codes in https://github.com/dograga/ServiceNowPytho
 Following is sample output:
 
 ![Alt text](/servicenow_sla_sample.JPG?raw=true)
+
+## ServiceNow SLA Trends
+
+Chart for servicenow SLA trends from codes in https://github.com/dograga/ServiceNowPython
+
+Following is sample output:
+![Alt text](/snowsla_trends.JPG?raw=true)
