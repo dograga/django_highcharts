@@ -1,0 +1,129 @@
+<html>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<script src="http://code.highcharts.com/modules/offline-exporting.js"></script>
+<script src="http://highcharts.github.io/export-csv/export-csv.js"></script>
+<script src="{% static 'vmcap/moment.js' %}"></script>
+<body>
+<table>
+<tr><td><div id="container1" class="chart"></div></td>
+</tr>
+</table>
+<script>
+function updateseries(tempseries,year,month,name,count,updatedate)
+{
+       var found=0
+       var len=tempseries.length
+       for (var i=0; i<len;i++)
+       {
+          if (tempseries[i].name==name)
+          {
+              var arraylen=tempseries[i].count.length
+              tempseries[i].count[arraylen]=[]
+              updatemonth=Date.UTC(year, month, 1)
+              //tempseries[i].count[arraylen][0]= updatemonth
+              tempseries[i].count[arraylen][0]= moment(updatedate).valueOf()
+              tempseries[i].count[arraylen][1]=count
+              found=1
+          }
+       }
+       if (found==0)
+       {
+              tempseries[len]=[]
+              tempseries[len].name=name
+              tempseries[len].count=[]
+              tempseries[len].count[0]=[]
+              updatemonth=Date.UTC(year, month, 1)
+              //tempseries[len].count[0][0]= updatemonth
+              tempseries[len].count[0][0]=moment(updatedate).valueOf()
+              tempseries[len].count[0][1]=count
+       }
+}
+function createseries(tempseries,tempseries1,tempseries2)
+{
+       var color=['#0066FF','#000000','#ff0000','#00ff00']
+       var series=[]
+       var len=tempseries.length
+       series=[{name: tempseries[0].name,color: color[0],data: tempseries[0].count},{name: tempseries1[0].name,color: color[2],data: tempseries1[0].count},{name: tempseries2[0].name,type: 'spline',yAxis: 1,color: color[3],data: tempseries2[0].count}]
+       return series
+}
+function createseries1(tempseries)
+{
+       var series=[]
+       series=[{name: 'Change Task'},{data: tempseries[0].count}]
+       return series
+}
+function createChart(containerId,title,subtitle,yaxis,credits,series) {
+   var chartingOptions = {
+        chart: {renderTo: containerId, type: 'column',zoomType:'x','width': 1800,'height': 800},
+        title: {
+            text: title
+        },
+        credits: credits,
+       xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+           day: ' %b %Y'    //ex- 01 Jan 2016
+        },
+            title: {
+                text: 'Month'
+            }
+        },
+        yAxis: [{ // Primary yAxis
+            labels: {
+                format: '{value}',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            title: {
+                text: yaxis,
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            }
+        },{ // Secondary yAxis
+            title: {
+                text: 'Percent',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            labels: {
+                format: '{value} %',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            opposite: true
+        }],
+            series: series
+    };
+    $('#' + containerId).highcharts(chartingOptions);
+}
+var tasksresolved=[]
+var tasksbreached=[]
+var slaattainment=[]
+{% for key,value_list in dfsla.items %}
+   var resolved_tasks= {{ value_list.resolved|safe }}
+   var breachedsla= {{ value_list.breachedsla|safe }}
+   var month= "{{ value_list.month|safe }}"
+   var year= "{{ value_list.year|safe }}"
+   updatedate=Math.trunc(year)+'-'+Math.trunc(month)+'-01 00:00:00'
+   sla_attainment={{ value_list.monthlysla }}
+   updateseries(tasksresolved,year,month,'ResolvedTasks',resolved_tasks,updatedate)
+   updateseries(tasksbreached,year,month,'BreachedTasks',breachedsla,updatedate)
+   updateseries(slaattainment,year,month,'SLAattainment',sla_attainment,updatedate)
+{% endfor %}
+var series=createseries(tasksresolved,tasksbreached,slaattainment)
+//var series=createseries(tasksbreached,tasksresolved)
+var title="ServiceNow SLA"
+var yaxis="Tasks Count"
+var subtitle=""
+var credits= {enabled : false}
+createChart('container1',title,subtitle,yaxis,credits,series)
+</script>
+</body>
+</html>
